@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const { signin } = require('../middlewares');
-const User = require('../model');
+const { User, validate } = require('../model');
 
 const router = new Router();
 
@@ -11,7 +11,10 @@ router.get('/', (req, res) => {
   res.render('index')
 });
 
-router.post('/', signin, async (req, res) => {
+router.post('/', async (req, res) => {
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+  
   const { email, password } = req.body;
   
   let user = await User.findOne({ email });
