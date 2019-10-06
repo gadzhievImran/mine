@@ -1,0 +1,12 @@
+extends layout
+block main
+    h1 Авторизация
+    div
+        a(href="/") Зарегестрироваться
+    form(method="post")
+        div email
+            input(name="email")
+        div password
+            input(name="password")
+        div
+            button(type="submit") Submit
