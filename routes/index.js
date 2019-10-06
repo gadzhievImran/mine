@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
   res.render('index')
 });
 
-router.post('/', async (req, res) => {
+router.post('/', signin, async (req, res) => {
   const { email, password } = req.body;
   
   let user = await User.findOne({ email });
@@ -56,12 +56,23 @@ router.post('/signin', async (req, res) => {
     const token = jwt.sign({ _id: user._id }, 'privateCode');
     res.cookie('token', token);
     res.header('x-auth-token', token);
-    res.render('main');
+    res.redirect('/current');
   } else {
     res.render('error', {
       message: 'Пароль неверный'
     })
   }
+});
+
+router.get('/current', (req, res) => {
+  res.render('current');
+});
+
+
+router.post('/current', signin, async (req, res) => {
+  console.log(req.user)
+  const user = await User.findOne({ _id: req.user._id });
+  res.send(user);
 });
 
 module.exports = router;

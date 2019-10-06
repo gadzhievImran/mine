@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser')
 
 const router = require('./routes');
 
@@ -8,6 +9,7 @@ const app = express();
 app.set('view engine', 'pug');
 app.use(express.urlencoded());
 app.use(express.static('public'));
+app.use(cookieParser());
 
 mongoose
   .connect('mongodb://localhost/mine', { useUnifiedTopology: true, useNewUrlParser: true })
