@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const cors = require('cors')
 
 const router = require('./routes');
 
@@ -10,6 +11,8 @@ app.set('view engine', 'pug');
 app.use(express.urlencoded());
 app.use(express.static('public'));
 app.use(cookieParser());
+app.use(express.json());
+app.use(cors());
 
 mongoose
   .connect('mongodb://localhost/mine', { useUnifiedTopology: true, useNewUrlParser: true })

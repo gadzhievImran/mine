@@ -8,7 +8,14 @@ const { User, validate } = require('../model');
 const router = new Router();
 
 router.get('/', (req, res) => {
-  res.render('index')
+  // if(req.cookies && req.cookies.token) {
+  //   const user = User.findOne({ _id: req.user });
+  //   if(user) {
+  //     res.redirect('/main')
+  //   }
+  // }
+  
+  res.render('index');
 });
 
 router.post('/', async (req, res) => {
@@ -71,6 +78,9 @@ router.get('/current', (req, res) => {
   res.render('current');
 });
 
+router.get('/main', (req, res) => {
+  res.render('main');
+});
 
 router.post('/current', signin, async (req, res) => {
   console.log(req.user)
