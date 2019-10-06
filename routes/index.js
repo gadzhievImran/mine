@@ -7,7 +7,7 @@ const { User, validate } = require('../model');
 
 const router = new Router();
 
-router.get('/', (req, res) => {
+router.get('/signup', (req, res) => {
   // if(req.cookies && req.cookies.token) {
   //   const user = User.findOne({ _id: req.user });
   //   if(user) {
@@ -18,22 +18,29 @@ router.get('/', (req, res) => {
   res.render('index');
 });
 
-router.post('/', async (req, res) => {
+router.post('/signup', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
   
   let user = await User.findOne({ email });
   
   if(user) {
-    return res.render('error', {
-      message: 'Такой пользователь зарегестрирован'
-    });
+    // return res.render('error', {
+    //   message: 'Такой пользователь зарегестрирован'
+    // });
+    
+    return res.send({
+      data: {
+        message: 'Такой пользователь зарегестрирован',
+        token: null
+      }
+    })
   }
   
   user = new User({
-    email, password
+    name, email, password
   });
   
   user.password = await bcrypt.hash(user.password, 10);
@@ -42,7 +49,13 @@ router.post('/', async (req, res) => {
   const token = user.generateToken();
   res.cookie('token', token);
   res.header('x-auth-token', token)
-    .redirect('signin')
+    .send({
+      data: {
+        message: 'Вы успешно зарегистрированы',
+        token
+      }
+    })
+    // .redirect('signin')
 });
 
 router.get('/signin', (req, res) => {
@@ -57,8 +70,15 @@ router.post('/signin', async (req, res) => {
   if(user) {
     pass = await bcrypt.compare(password, user.password);
   } else {
-    res.render('error', {
-      message: 'Такого пользователя нет'
+    // res.render('error', {
+    //   message: 'Такого пользователя нет'
+    // })
+  
+    res.send({
+      data: {
+        message: 'Такого пользователя нет, зарегистрируйтесь',
+        token: null
+      }
     })
   }
 
@@ -66,10 +86,22 @@ router.post('/signin', async (req, res) => {
     const token = jwt.sign({ _id: user._id }, 'privateCode');
     res.cookie('token', token);
     res.header('x-auth-token', token);
-    res.redirect('/current');
+    res.send({
+      data: {
+        message: 'Вы авторизованы',
+        token
+      }
+    })
+    // res.redirect('/current');
   } else {
-    res.render('error', {
-      message: 'Пароль неверный'
+    // res.render('error', {
+    //   message: 'Пароль неверный'
+    // })
+    res.send({
+      data: {
+        message: 'Неверный пароль',
+        token: null
+      }
     })
   }
 });
